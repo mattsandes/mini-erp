@@ -3,7 +3,6 @@ package br.com.sandes.services;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import br.com.sandes.data.Product;
@@ -15,12 +14,13 @@ import br.com.sandes.repositories.ProductRepository;
 @Service
 public class ProductService {
 
-	@Autowired
 	protected ProductMapper mapper;
-	
 	private final ProductRepository repository;
 
-	public ProductService(ProductRepository repository) {
+	public ProductService(
+			ProductMapper mapper,
+			ProductRepository repository) {
+		this.mapper = mapper;
 		this.repository = repository;
 	}
 	
