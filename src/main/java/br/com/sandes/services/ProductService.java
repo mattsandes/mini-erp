@@ -9,6 +9,7 @@ import br.com.sandes.data.Product;
 import br.com.sandes.data.DTOs.CreateProductDTO;
 import br.com.sandes.data.DTOs.ProductDTO;
 import br.com.sandes.data.mappers.ProductMapper;
+import br.com.sandes.exceptions.DuplicatedProductCodeException;
 import br.com.sandes.repositories.ProductRepository;
 
 @Service
@@ -39,6 +40,12 @@ public class ProductService {
 	}
 	
 	public ProductDTO createProduct(CreateProductDTO dto) {
+		
+		var duplicatedProduct = repository.existsByProductCode(dto.productCode());
+		
+		if(duplicatedProduct) {
+			throw new DuplicatedProductCodeException();
+		}
 		
 		Product product = mapper.dtoToEntity(dto);
 		
