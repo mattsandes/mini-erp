@@ -18,17 +18,22 @@ public class Product {
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
 	
-	@Column(length = 100)
+	@Column(
+			length = 100,
+			nullable = false)
 	private String name;
 	
 	@Column(
 			unique = true,
-			length = 20)
+			length = 20,
+			nullable = false)
 	private String productCode;
 	private BigDecimal price;
 	private String unit;
 	
-	@Column(length = 255)
+	@Column(
+			length = 255,
+			nullable = false)
 	private String description;
 
 	public Product(Long id, String name, String productCode, BigDecimal price, String unit, String description) {
