@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.RestController;
 import br.com.sandes.data.DTOs.CreateProductDTO;
 import br.com.sandes.data.DTOs.ProductDTO;
 import br.com.sandes.services.ProductService;
+import jakarta.validation.Valid;
 
 @RestController
 @RequestMapping("api/product")
@@ -28,7 +29,7 @@ public class ProductController {
 	}
 	
 	@PostMapping
-	public ProductDTO createProduct(@RequestBody CreateProductDTO dto) {
+	public ProductDTO createProduct(@RequestBody @Valid CreateProductDTO dto) {
 		return productService.createProduct(dto);
 	}
 }
