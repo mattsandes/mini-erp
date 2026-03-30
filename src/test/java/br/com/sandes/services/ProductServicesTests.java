@@ -2,6 +2,10 @@ package br.com.sandes.services;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import java.util.List;
@@ -13,9 +17,11 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import br.com.sandes.data.Product;
 import br.com.sandes.data.DTOs.CreateProductDTO;
 import br.com.sandes.data.DTOs.ProductDTO;
 import br.com.sandes.data.mappers.ProductMapper;
+import br.com.sandes.exceptions.DuplicatedProductCodeException;
 import br.com.sandes.repositories.ProductRepository;
 
 @ExtendWith(MockitoExtension.class)
@@ -62,5 +68,22 @@ public class ProductServicesTests {
 				
 		assertNotNull(createdProduct);
 		assertEquals(createdProduct.description(), "Produto Test");
+	}
+	
+	@Test
+	@DisplayName("Validar que não é possivel criar um produto com o productCode ja existente")
+	void given_productWithProductCodeAlreadyCreated_when_createMethodIsCalled_then_aExceptionShouldBeThrown() {
+		CreateProductDTO dto = new CreateProductDTO(
+	            "Test Product",
+	            "COD-001",
+	            100.0,
+	            "Product description",
+	            "UN"
+	    );
+		
+		when(repository.existsByProductCode(dto.productCode())).thenReturn(true);
+		
+		assertThrows(DuplicatedProductCodeException.class, () -> productService.createProduct(dto));
+		verify(repository, never()).save(any(Product.class));
 	}
 }
