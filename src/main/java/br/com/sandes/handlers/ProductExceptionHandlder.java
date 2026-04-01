@@ -9,9 +9,10 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
 
-import br.com.sandes.exceptions.DuplicatedProductCodeException;
+import br.com.sandes.exceptions.DuplicatedRecordCodeException;
 import br.com.sandes.exceptions.ExceptionResponse;
 import br.com.sandes.exceptions.RequiredObjectNullException;
+import br.com.sandes.exceptions.ResourceNotFoundException;
 
 @RestControllerAdvice
 public class ProductExceptionHandlder extends ResponseEntityExceptionHandler {
@@ -27,7 +28,8 @@ public class ProductExceptionHandlder extends ResponseEntityExceptionHandler {
 	}
 	
 	@ExceptionHandler({
-		DuplicatedProductCodeException.class,
+		ResourceNotFoundException.class,
+		DuplicatedRecordCodeException.class,
 		RequiredObjectNullException.class
 	})
 	private final ResponseEntity<ExceptionResponse> handleBadRequestException (
