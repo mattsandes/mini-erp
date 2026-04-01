@@ -21,7 +21,7 @@ import br.com.sandes.data.Product;
 import br.com.sandes.data.DTOs.CreateProductDTO;
 import br.com.sandes.data.DTOs.ProductDTO;
 import br.com.sandes.data.mappers.ProductMapper;
-import br.com.sandes.exceptions.DuplicatedProductCodeException;
+import br.com.sandes.exceptions.DuplicatedRecordCodeException;
 import br.com.sandes.repositories.ProductRepository;
 
 @ExtendWith(MockitoExtension.class)
@@ -83,7 +83,7 @@ public class ProductServicesTests {
 		
 		when(repository.existsByProductCode(dto.productCode())).thenReturn(true);
 		
-		assertThrows(DuplicatedProductCodeException.class, () -> productService.createProduct(dto));
+		assertThrows(DuplicatedRecordCodeException.class, () -> productService.createProduct(dto));
 		verify(repository, never()).save(any(Product.class));
 	}
 }
