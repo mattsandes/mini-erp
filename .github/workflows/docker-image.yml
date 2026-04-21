@@ -38,5 +38,8 @@ jobs:
       - name: Build e testes com Maven
         run: mvn -B clean verify
 
-      - name: ECR Login
-        uses: thalesvon/ecr-login@1.0.0
+      - name: Configurar credenciais AWS via OIDC
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: ${{ secrets.AWS_GITHUB_ACTIONS_ROLE_ARN }}
+          aws-region: ${{ secrets.AWS_REGION }}
