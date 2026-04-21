@@ -7,6 +7,10 @@ on:
   push:
     branches: [ "main" ]
 
+env:
+  AWS_REGION: us-east-1
+  ECR_REPOSITORY: minha-aplicacao
+
 jobs:
   build-test-push:
     runs-on: ubuntu-latest
@@ -19,6 +23,12 @@ jobs:
       - name: Checkout do código
         uses: actions/checkout@v4
 
+      - name: Mostrar contexto do evento
+        run: |
+          echo "event_name=${{ github.event_name }}"
+          echo "ref=${{ github.ref }}"
+          echo "sha=${{ github.sha }}"
+
       - name: Configurar Java 21 + cache Maven
         uses: actions/setup-java@v4
         with:
@@ -26,33 +36,27 @@ jobs:
           java-version: 21
           cache: maven
 
+      - name: Build e testes com Maven
+        run: mvn -B clean verify
+
       - name: Configurar credenciais AWS via OIDC
-        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+        if: ${{ github.event_name != 'pull_request' }}
         uses: aws-actions/configure-aws-credentials@v4
         with:
           role-to-assume: ${{ secrets.AWS_GITHUB_ACTIONS_ROLE_ARN }}
-          aws-region: ${{ secrets.AWS_REGION }}
+          aws-region: ${{ env.AWS_REGION }}
 
-      - name: Compilar aplicação
-        run: mvn -B clean package -DskipTests
-
-      - name: Rodar testes
-        run: mvn -B test
-
-      - name: Configurar credenciais AWS via OIDC
-        if: github.event_name == 'push' || github.event_name == 'workflow_dispatch'
-        uses: aws-actions/configure-aws-credentials@v4
-        with:
-          role-to-assume: ${{ secrets.AWS_GITHUB_ACTIONS_ROLE_ARN }}
-          aws-region: ${{ secrets.AWS_REGION }}
+      - name: Verificar identidade AWS
+        if: ${{ github.event_name != 'pull_request' }}
+        run: aws sts get-caller-identity
 
       - name: Login no Amazon ECR
-        if: github.event_name == 'push' || github.event_name == 'workflow_dispatch'
+        if: ${{ github.event_name != 'pull_request' }}
         id: login-ecr
         uses: aws-actions/amazon-ecr-login@v2
 
       - name: Build, tag e push da imagem
-        if: github.event_name == 'push' || github.event_name == 'workflow_dispatch'
+        if: ${{ github.event_name != 'pull_request' }}
         env:
           REGISTRY: ${{ steps.login-ecr.outputs.registry }}
           IMAGE_TAG: ${{ github.sha }}
