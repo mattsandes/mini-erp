@@ -24,3 +24,16 @@ jobs:
           distribution: temurin
           java-version: 21
           cache: maven
+
+      - name: Configurar credenciais AWS via OIDC
+        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: ${{ secrets.AWS_GITHUB_ACTIONS_ROLE_ARN }}
+          aws-region: ${{ env.AWS_REGION }}
+
+      - name: Compilar aplicação
+        run: mvn -B clean package -DskipTests
+
+      - name: Rodar testes
+        run: mvn -B test
