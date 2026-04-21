@@ -1,9 +1,26 @@
-name: Pipeline para deploy da aplicação Mini-ERP
-on:
-  push:
-    branches: [master]
-  pull_request:
-    branches: [master]
+name: CI - Build, Test and Push to ECR
 
-  env:
-    AWS_REGION: us-east-2
+on:
+  pull_request:
+    branches: [ "main" ]
+  push:
+    branches: [ "main" ]
+
+jobs:
+  build-test-push:
+    runs-on: ubuntu-latest
+
+    permissions:
+      id-token: write
+      contents: read
+
+    steps:
+      - name: Checkout do código
+        uses: actions/checkout@v4
+
+      - name: Configurar Java 21 + cache Maven
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: 21
+          cache: maven
