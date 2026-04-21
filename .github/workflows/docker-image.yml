@@ -7,10 +7,6 @@ on:
   push:
     branches: [ "master" ]
 
-env:
-  AWS_REGION: us-east-1
-  ECR_REPOSITORY: minha-aplicacao
-
 jobs:
   build-test-push:
     runs-on: ubuntu-latest
@@ -43,7 +39,7 @@ jobs:
         uses: aws-actions/configure-aws-credentials@v4
         with:
           role-to-assume: ${{ secrets.AWS_GITHUB_ACTIONS_ROLE_ARN }}
-          aws-region: ${{ env.AWS_REGION }}
+          aws-region: ${{ secrets.AWS_REGION }}
 
       - name: Verificar identidade AWS
         run: aws sts get-caller-identity
