@@ -32,6 +32,9 @@ jobs:
           java-version: 21
           cache: maven
 
+      - name: Configurar Docker
+        uses: docker/setup-docker-action@v5.0.0
+
       - name: Build e testes com Maven
         run: mvn -B clean verify
 
